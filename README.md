@@ -1,4 +1,4 @@
-# zod-env
+# envzod
 
 Universal, type-safe environment variable validation powered by [Zod](https://zod.dev).
 
@@ -10,18 +10,18 @@ Works with **Next.js, Express, Fastify, Remix, Bun** — any Node.js project.
 
 - `process.env` values are all `string | undefined` — no types, no validation
 - Errors surface at runtime deep in your app instead of at startup
-- `zod-env` validates your env at boot and gives you a **fully typed object** — no casting needed
+- `envzod` validates your env at boot and gives you a **fully typed object** — no casting needed
 
 ---
 
 ## Install
 
 ```bash
-npm install zod-env
+npm install envzod
 # or
-pnpm add zod-env
+pnpm add envzod
 # or
-yarn add zod-env
+yarn add envzod
 ```
 
 > `zod` is a peer dependency and is installed automatically (npm 7+, pnpm, yarn).
@@ -32,7 +32,7 @@ yarn add zod-env
 
 ```ts
 // env.ts
-import { createEnv } from 'zod-env'
+import { createEnv } from 'envzod'
 import { z } from 'zod'
 
 export const env = createEnv({
@@ -52,7 +52,7 @@ env.NODE_ENV     // "development" | "test" | "production"
 
 ## Error Output
 
-When validation fails, `zod-env` prints a clear, readable error and throws:
+When validation fails, `envzod` prints a clear, readable error and throws:
 
 ```
 ╔════════════════════════════════════════════╗
@@ -109,26 +109,41 @@ type EnvValidationError = {
 
 ### Next.js (App Router)
 
+> **Important:** Next.js only inlines `NEXT_PUBLIC_*` vars when referenced **explicitly** (e.g. `process.env.NEXT_PUBLIC_FOO`). Passing the whole `process.env` object doesn't work on the client side. Always use the `source` option and list each var individually.
+
 ```ts
 // src/env.ts
-import { createEnv } from 'zod-env'
+import { createEnv } from 'envzod'
 import { z } from 'zod'
 
-export const env = createEnv({
-  DATABASE_URL: z.string().url(),
-  JWT_SECRET: z.string().min(32),
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  NEXT_PUBLIC_API_URL: z.string().url(),
-}, {
-  verbose: process.env.NODE_ENV === 'development',
-})
+export const env = createEnv(
+  {
+    // Server-only vars
+    DATABASE_URL: z.string().url(),
+    JWT_SECRET: z.string().min(32),
+    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+
+    // Public vars (accessible in browser)
+    NEXT_PUBLIC_API_URL: z.string().url(),
+  },
+  {
+    // Must explicitly list each var so Next.js/Turbopack can statically inline them
+    source: {
+      DATABASE_URL: process.env.DATABASE_URL,
+      JWT_SECRET: process.env.JWT_SECRET,
+      NODE_ENV: process.env.NODE_ENV,
+      NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    },
+    verbose: process.env.NODE_ENV === 'development',
+  },
+)
 ```
 
 ### Express
 
 ```ts
 // src/env.ts
-import { createEnv } from 'zod-env'
+import { createEnv } from 'envzod'
 import { z } from 'zod'
 
 export const env = createEnv({
@@ -148,7 +163,7 @@ app.listen(env.PORT)
 
 ```ts
 // env.ts
-import { createEnv } from 'zod-env'
+import { createEnv } from 'envzod'
 import { z } from 'zod'
 
 export const env = createEnv({
@@ -165,10 +180,10 @@ export const env = createEnv({
 
 ## TypeScript
 
-`zod-env` uses the `InferEnv<T>` utility type to derive the return type from your schema. No manual type annotations needed.
+`envzod` uses the `InferEnv<T>` utility type to derive the return type from your schema. No manual type annotations needed.
 
 ```ts
-import type { InferEnv } from 'zod-env'
+import type { InferEnv } from 'envzod'
 import { z } from 'zod'
 
 const schema = {
@@ -184,7 +199,7 @@ type Env = InferEnv<typeof schema>
 
 ## vs t3-env
 
-| Feature | zod-env | t3-env |
+| Feature | envzod | t3-env |
 |---|---|---|
 | Framework | Universal | Next.js focused |
 | Setup | `createEnv(schema)` | Separate client/server schemas |
