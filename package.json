@@ -1,0 +1,74 @@
+{
+  "name": "zod-env",
+  "version": "1.0.0",
+  "description": "Universal, type-safe environment variable validation powered by Zod",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/index.js",
+    "dist/index.mjs",
+    "dist/index.d.ts",
+    "dist/index.d.mts",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "peerDependencies": {
+    "zod": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "keywords": [
+    "zod",
+    "env",
+    "environment",
+    "validation",
+    "typescript",
+    "nodejs",
+    "nextjs",
+    "process.env",
+    "env-validation",
+    "type-safe",
+    "dotenv",
+    "schema"
+  ],
+  "author": "Sridhar-C-25",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sridhar-C-25/zod-env"
+  },
+  "bugs": {
+    "url": "https://github.com/Sridhar-C-25/zod-env/issues"
+  },
+  "homepage": "https://github.com/Sridhar-C-25/zod-env#readme"
+}
