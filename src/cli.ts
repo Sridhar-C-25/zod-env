@@ -11,10 +11,18 @@ function getFlag(flag: string): string | undefined {
 }
 
 const envFile = getFlag('--env') ?? '.env'
-const configFile = getFlag('--config') ?? 'envzod.config.js'
+const configFile = getFlag('--config') ?? 'envzod.config'
+
+function resolveConfig(base: string): { path: string; type: 'ts' | 'js' } | null {
+  const ts = resolve(process.cwd(), `${base}.ts`)
+  if (existsSync(ts)) return { path: ts, type: 'ts' }
+  const js = resolve(process.cwd(), `${base}.js`)
+  if (existsSync(js)) return { path: js, type: 'js' }
+  return null
+}
 
 const envPath = resolve(process.cwd(), envFile)
-const configPath = resolve(process.cwd(), configFile)
+const resolved = resolveConfig(configFile)
 
 function parseEnvFile(path: string): Record<string, string | undefined> {
   if (!existsSync(path)) return {}
@@ -32,28 +40,36 @@ function parseEnvFile(path: string): Record<string, string | undefined> {
   return result
 }
 
+function loadConfig(path: string, type: 'ts' | 'js'): Record<string, unknown> {
+  if (type === 'ts') {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { createJiti } = require('jiti')
+    const jiti = createJiti(__filename, { interopDefault: true })
+    const config = jiti(path)
+    return config.default ?? config
+  }
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const config = require(path)
+  return config.default ?? config
+}
+
 function main() {
-  if (!existsSync(configPath)) {
-    console.error(`\nenvzod: config file not found — ${configFile}`)
-    console.error('Create envzod.config.js exporting your schema:\n')
-    console.error('  const { z } = require("zod")')
-    console.error('  module.exports = {')
+  if (!resolved) {
+    console.error(`\nenvzod: config file not found — ${configFile}.ts or ${configFile}.js`)
+    console.error('Create envzod.config.ts (or .js) exporting your schema:\n')
+    console.error('  import { z } from "zod"')
+    console.error('  export default {')
     console.error('    DATABASE_URL: z.string().url(),')
     console.error('    PORT: z.coerce.number().default(3000),')
     console.error('  }\n')
     process.exit(1)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const config = require(configPath)
-  const schema = config.default ?? config
-
+  const schema = loadConfig(resolved.path, resolved.type)
   const source = parseEnvFile(envPath)
-
-  // Also merge process.env so vars set in the shell are picked up
   const merged = { ...process.env, ...source }
 
-  const result = validate(schema, merged)
+  const result = validate(schema as never, merged)
 
   if (!result.success) {
     console.error(formatErrors(result.errors))

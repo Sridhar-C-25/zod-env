@@ -3,7 +3,7 @@ import { defineConfig } from "tsup";
 export default defineConfig([
   // Library
   {
-    entry: ["src/index.ts"],
+    entry: ["src/index.ts", "src/next.ts"],
     format: ["cjs", "esm"],
     dts: true,
     clean: true,
@@ -18,7 +18,7 @@ export default defineConfig([
     dts: false,
     sourcemap: false,
     splitting: false,
-    noExternal: ["zod"],
+    noExternal: ["zod", "jiti"],
     banner: { js: "#!/usr/bin/env node" },
   },
 ]);

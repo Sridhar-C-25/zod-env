@@ -1,4 +1,4 @@
-import { createEnv } from 'zod-env'
+import { createEnv } from 'envzod'
 import { z } from 'zod'
 
 // Bun exposes env via Bun.env or process.env — both work with zod-env.

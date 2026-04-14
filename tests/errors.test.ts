@@ -12,7 +12,7 @@ describe('createEnv — validation errors', () => {
     const spy = silenceConsoleError()
     expect(() =>
       createEnv({ DATABASE_URL: z.string() }, { source: {} }),
-    ).toThrow('zod-env: environment validation failed')
+    ).toThrow('DATABASE_URL')
     spy.mockRestore()
   })
 

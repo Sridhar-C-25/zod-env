@@ -11,6 +11,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
+    },
+    "./next": {
+      "types": "./dist/next.d.ts",
+      "import": "./dist/next.mjs",
+      "require": "./dist/next.js"
     }
   },
   "bin": {
@@ -19,9 +24,11 @@
   "files": [
     "dist/index.js",
     "dist/index.mjs",
-    "dist/index.d.ts",
-    "dist/index.d.mts",
+    "dist/next.js",
+    "dist/next.mjs",
     "dist/cli.js",
+    "dist/*.d.ts",
+    "dist/*.d.mts",
     "LICENSE",
     "CHANGELOG.md"
   ],
@@ -46,6 +53,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "jiti": "^2.6.1",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
     "vitest": "^1.0.0",

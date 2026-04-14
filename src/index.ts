@@ -13,7 +13,7 @@ export function createEnv<T extends EnvSchema>(
     const formatted = formatErrors(result.errors)
     console.error(formatted)
     options?.onError?.(result.errors)
-    throw new Error('zod-env: environment validation failed')
+    throw new Error(formatted)
   }
 
   if (options?.verbose) {

@@ -1,4 +1,4 @@
-import { createEnv } from 'zod-env'
+import { createEnv } from 'envzod'
 import { z } from 'zod'
 
 // Call this once at app startup (before app.listen).
