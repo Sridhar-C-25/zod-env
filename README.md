@@ -32,20 +32,20 @@ yarn add envzod
 
 ```ts
 // env.ts
-import { createEnv } from 'envzod'
-import { z } from 'zod'
+import { createEnv } from "envzod";
+import { z } from "zod";
 
 export const env = createEnv({
   DATABASE_URL: z.string().url(),
   PORT: z.coerce.number().default(3000),
-  NODE_ENV: z.enum(['development', 'test', 'production']),
+  NODE_ENV: z.enum(["development", "test", "production"]),
   JWT_SECRET: z.string().min(32),
-})
+});
 
 // Fully typed — no casting needed
-env.PORT         // number
-env.DATABASE_URL // string
-env.NODE_ENV     // "development" | "test" | "production"
+env.PORT; // number
+env.DATABASE_URL; // string
+env.NODE_ENV; // "development" | "test" | "production"
 ```
 
 ---
@@ -88,19 +88,19 @@ const env = createEnv(schema, {
 
   // Called with structured errors before throwing — use for Sentry, logging, etc.
   onError: (errors) => {
-    Sentry.captureException(new Error('Invalid env'), { extra: { errors } })
+    Sentry.captureException(new Error("Invalid env"), { extra: { errors } });
   },
-})
+});
 ```
 
 ### `onError` signature
 
 ```ts
 type EnvValidationError = {
-  field: string
-  message: string
-  received: string | undefined
-}
+  field: string;
+  message: string;
+  received: string | undefined;
+};
 ```
 
 ---
@@ -113,15 +113,17 @@ type EnvValidationError = {
 
 ```ts
 // src/env.ts
-import { createEnv } from 'envzod'
-import { z } from 'zod'
+import { createEnv } from "envzod";
+import { z } from "zod";
 
 export const env = createEnv(
   {
     // Server-only vars
     DATABASE_URL: z.string().url(),
     JWT_SECRET: z.string().min(32),
-    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    NODE_ENV: z
+      .enum(["development", "test", "production"])
+      .default("development"),
 
     // Public vars (accessible in browser)
     NEXT_PUBLIC_API_URL: z.string().url(),
@@ -134,46 +136,52 @@ export const env = createEnv(
       NODE_ENV: process.env.NODE_ENV,
       NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     },
-    verbose: process.env.NODE_ENV === 'development',
+    verbose: process.env.NODE_ENV === "development",
   },
-)
+);
 ```
 
 ### Express
 
 ```ts
 // src/env.ts
-import { createEnv } from 'envzod'
-import { z } from 'zod'
+import { createEnv } from "envzod";
+import { z } from "zod";
 
-export const env = createEnv({
-  PORT: z.coerce.number().default(3000),
-  DATABASE_URL: z.string().url(),
-  JWT_SECRET: z.string().min(32),
-}, {
-  verbose: process.env.NODE_ENV === 'development',
-})
+export const env = createEnv(
+  {
+    PORT: z.coerce.number().default(3000),
+    DATABASE_URL: z.string().url(),
+    JWT_SECRET: z.string().min(32),
+  },
+  {
+    verbose: process.env.NODE_ENV === "development",
+  },
+);
 
 // app.ts
-import { env } from './env'
-app.listen(env.PORT)
+import { env } from "./env";
+app.listen(env.PORT);
 ```
 
 ### Bun
 
 ```ts
 // env.ts
-import { createEnv } from 'envzod'
-import { z } from 'zod'
+import { createEnv } from "envzod";
+import { z } from "zod";
 
-export const env = createEnv({
-  PORT: z.coerce.number().default(3000),
-  DATABASE_URL: z.string().url(),
-  JWT_SECRET: z.string().min(32),
-}, {
-  source: Bun.env,
-  verbose: Bun.env.NODE_ENV === 'development',
-})
+export const env = createEnv(
+  {
+    PORT: z.coerce.number().default(3000),
+    DATABASE_URL: z.string().url(),
+    JWT_SECRET: z.string().min(32),
+  },
+  {
+    source: Bun.env,
+    verbose: Bun.env.NODE_ENV === "development",
+  },
+);
 ```
 
 ---
@@ -183,29 +191,67 @@ export const env = createEnv({
 `envzod` uses the `InferEnv<T>` utility type to derive the return type from your schema. No manual type annotations needed.
 
 ```ts
-import type { InferEnv } from 'envzod'
-import { z } from 'zod'
+import type { InferEnv } from "envzod";
+import { z } from "zod";
 
 const schema = {
   PORT: z.coerce.number(),
-  NODE_ENV: z.enum(['development', 'production']),
-}
+  NODE_ENV: z.enum(["development", "production"]),
+};
 
-type Env = InferEnv<typeof schema>
+type Env = InferEnv<typeof schema>;
 // { PORT: number; NODE_ENV: "development" | "production" }
+```
+
+---
+
+## CLI — `npx envzod check`
+
+Validate your env before deploying — great for CI/CD pipelines.
+
+**1. Create `envzod.config.js` in your project root:**
+
+```js
+const { z } = require("zod");
+
+module.exports = {
+  DATABASE_URL: z.string().url(),
+  PORT: z.coerce.number().default(3000),
+  NODE_ENV: z.enum(["development", "test", "production"]),
+};
+```
+
+**2. Run the check:**
+
+```bash
+npx envzod check
+```
+
+**Options:**
+
+```bash
+npx envzod check --env .env.production   # custom env file (default: .env)
+npx envzod check --config my.config.js   # custom config file
+```
+
+**Add to CI (GitHub Actions example):**
+
+```yaml
+- name: Validate environment
+  run: npx envzod check --env .env.production
 ```
 
 ---
 
 ## vs t3-env
 
-| Feature | envzod | t3-env |
-|---|---|---|
-| Framework | Universal | Next.js focused |
-| Setup | `createEnv(schema)` | Separate client/server schemas |
-| Dependencies | zod only | Next.js types + more |
-| Bundle | CJS + ESM | ESM only |
-| Error output | Pretty box | Zod default |
+| Feature      | envzod              | t3-env                         |
+| ------------ | ------------------- | ------------------------------ |
+| Framework    | Universal           | Next.js focused                |
+| Setup        | `createEnv(schema)` | Separate client/server schemas |
+| Dependencies | zod only            | Next.js types + more           |
+| Bundle       | CJS + ESM           | ESM only                       |
+| Error output | Pretty box          | Zod default                    |
 
 ---
 
