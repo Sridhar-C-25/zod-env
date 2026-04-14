@@ -18,6 +18,7 @@ export default defineConfig([
     dts: false,
     sourcemap: false,
     splitting: false,
+    noExternal: ["zod"],
     banner: { js: "#!/usr/bin/env node" },
   },
 ]);
