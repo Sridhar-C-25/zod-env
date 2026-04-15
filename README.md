@@ -7,6 +7,11 @@
 
 `envzod` validates environment variables against a Zod schema at boot time. You get a typed object back. If anything is missing or invalid, it throws with a clear error that tells you exactly what's wrong.
 
+- **Typed** — `env.PORT` is `number`, not `string | undefined`
+- **Fail-fast** — crashes at startup with a readable error, not deep in a request handler
+- **CLI check** — `npx envzod check` validates before deploy, works in CI/CD
+- **Next.js ready** — server/client split via `envzod/next`, no schema duplication
+
 ---
 
 ## Install
