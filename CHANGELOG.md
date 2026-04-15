@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+- Fix branding — error output now correctly shows `envzod` instead of `zod-env`
+
 ## 1.1.0
 
 ### CLI
