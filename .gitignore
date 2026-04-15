@@ -5,3 +5,4 @@ dist/
 .env.local
 .env.*
 zod-env-plan.md
+.claude/
