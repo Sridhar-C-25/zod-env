@@ -8,7 +8,7 @@ function pad(text: string, width: number): string {
 
 export function formatErrors(errors: EnvValidationError[]): string {
   const lines: string[] = []
-  const title = '  zod-env: Invalid Environment         '
+  const title = '  envzod: Invalid Environment          '
   lines.push(`╔${'═'.repeat(BOX_WIDTH)}╗`)
   lines.push(`║${pad(title, BOX_WIDTH)}║`)
   lines.push(`╚${'═'.repeat(BOX_WIDTH)}╝`)
@@ -28,5 +28,5 @@ export function formatErrors(errors: EnvValidationError[]): string {
 }
 
 export function formatSuccess(count: number): string {
-  return `✅ zod-env: ${count} variable${count === 1 ? '' : 's'} validated`
+  return `✅ envzod: ${count} variable${count === 1 ? '' : 's'} validated`
 }

@@ -55,7 +55,7 @@ describe('createEnv — validation errors', () => {
       createEnv({ DATABASE_URL: z.string().url() }, { source: { DATABASE_URL: 'not-a-url' } })
     } catch {}
     const output: string = spy.mock.calls[0][0]
-    expect(output).toContain('zod-env: Invalid Environment')
+    expect(output).toContain('envzod: Invalid Environment')
     expect(output).toContain('DATABASE_URL')
     expect(output).toContain('Fix the above and restart your server.')
     spy.mockRestore()
